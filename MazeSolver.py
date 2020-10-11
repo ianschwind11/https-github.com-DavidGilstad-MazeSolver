@@ -12,6 +12,8 @@ import numpy as np
 
 alpha, epsilon, gamma = 0.05, 1, 0.9  # TODO: Find out what are good values and explain in paper
 height = width = 6
+episodes = 10000
+maxSteps = 100
 
 # locations of the following objects on the grid
 start = [0, 5]
@@ -76,19 +78,35 @@ class TD_agent:
     def explore(self):
         return self.actions[np.random.choice([0, 1, 2, 3])]
 
+    def chooseOption(self):
+        # choose an action
+        chosenAction = np.random.choice([self.greedy(), self.explore()], p=[1 - epsilon, epsilon])
+        return chosenAction
+
     # choose an action greedily, i.e. the max value action with probability
     # 1-epsilon, and a random action with probability epsilon
     def action(self):
-        np.random.choice([self.greedy(), self.explore()], p=[1 - epsilon, epsilon])()
-        return self.curr_loc
+        action = self.chooseOption()
+        action()
+        return self.curr_loc, action
+
+    def sarsa(self):
+        t = 0
+        state1 = start
+        temp = self.action()
+        action1 = temp[1]
+        while(t<maxSteps):
+            self.action()
+            state2 = self.curr_loc
+            action2 = self.chooseOption
 
 
 if __name__ == '__main__':
     a, count = TD_agent(), 0
     while (a.curr_loc != end):
-        a.action()
+        temp = a.action()
         count += 1
-        print(count, a.curr_loc)
+        print(count, a.curr_loc, temp[1])
 
     print("ended at:", a.curr_loc)
     print("number of iterations:", count)
